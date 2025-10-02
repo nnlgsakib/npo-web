@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "NPO API (Local)",
+    "_postman_id": "f4c5db66-24b2-4b8e-9b3a-8f1c1b7ad1aa",
+    "description": "Single-file Postman collection for the NPO backend (posts + transactions).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "adminKey", "value": "changeme-admin-key" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Create Post (JSON with imageUrl)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Welcome\",\n  \"subTitle\": \"Intro\",\n  \"description\": \"Full description of the post...\",\n  \"imageUrl\": \"https://example.com/image.jpg\"\n}"
+            },
+            "url": "{{baseUrl}}/api/create-post"
+          }
+        },
+        {
+          "name": "Create Post (multipart with file)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Welcome", "type": "text" },
+                { "key": "subTitle", "value": "Intro", "type": "text" },
+                { "key": "description", "value": "Full description...", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/create-post"
+          }
+        },
+        {
+          "name": "Edit Post (JSON)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"1\",\n  \"title\": \"Updated Title\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": "{{baseUrl}}/api/edit-post_by_id"
+          }
+        },
+        {
+          "name": "Edit Post (multipart with file)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "id", "value": "1", "type": "text" },
+                { "key": "title", "value": "Updated Title", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/edit-post_by_id"
+          }
+        },
+        {
+          "name": "Delete Post (query)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/delete-post_by_id?id=1"
+          }
+        },
+        {
+          "name": "Delete Post (JSON body)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"1\"\n}" },
+            "url": "{{baseUrl}}/api/delete-post_by_id"
+          }
+        },
+        {
+          "name": "Get All Posts (summary)",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/get_all_posts" }
+        },
+        {
+          "name": "Get Post Full By ID",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/get_post_full_by_id?id=1" }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Record Txn (public)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"txnHash\": \"0xabc123\",\n  \"number\": 1,\n  \"meta\": { \"note\": \"donation\" }\n}"
+            },
+            "url": "{{baseUrl}}/api/record_txn_by_txn_hash_and_number"
+          }
+        },
+        {
+          "name": "Get Txn Details (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/get_txn_details?txnHash=0xabc123"
+          }
+        },
+        {
+          "name": "Get Full Txn Record (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/get_full_txn_record?txnHash=0xabc123"
+          }
+        },
+        {
+          "name": "Get Txn Info by Number or Hash (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/get_txn_info_by_number_or_hash?number=1"
+          }
+        }
+      ]
+    }
+  ]
+}
+

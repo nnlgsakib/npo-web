@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NPO API — Create Post (Upload)</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 720px; margin: 24px auto; padding: 0 16px; }
+      header { margin-bottom: 16px; }
+      fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+      label { display: block; font-weight: 600; margin: 8px 0 4px; }
+      input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 6px; }
+      textarea { min-height: 120px; }
+      input[type="file"] { margin-top: 6px; }
+      button { padding: 10px 16px; border: 0; background: #2563eb; color: #fff; border-radius: 6px; cursor: pointer; }
+      button:disabled { background: #94a3b8; cursor: not-allowed; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .muted { color: #666; font-size: 12px; }
+      pre { background: #0b1021; color: #dbeafe; padding: 12px; border-radius: 8px; overflow: auto; }
+      img { max-width: 100%; border: 1px solid #eee; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Create Post (with Image Upload)</h1>
+      <p class="muted">This page posts multipart/form-data to <code>/api/create-post</code> with an uploaded image. Requires the admin key.</p>
+    </header>
+    <form id="postForm">
+      <fieldset>
+        <div class="row">
+          <div>
+            <label for="baseUrl">API Base URL</label>
+            <input id="baseUrl" name="baseUrl" type="text" placeholder="http://localhost:3000" />
+            <div class="muted">Defaults to this page's origin. Set explicitly if opened from a different host/port.</div>
+          </div>
+          <div>
+            <label for="adminKey">Admin Key</label>
+            <input id="adminKey" name="adminKey" type="text" placeholder="Enter ADMIN_KEY" required />
+          </div>
+          <div>
+            <label for="title">Title</label>
+            <input id="title" name="title" type="text" placeholder="Welcome" required />
+          </div>
+        </div>
+        <label for="subTitle">Sub Title</label>
+        <input id="subTitle" name="subTitle" type="text" placeholder="Intro" />
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Full description..."></textarea>
+
+        <label for="image">Image (max 5MB)</label>
+        <input id="image" name="image" type="file" accept="image/*" required />
+
+        <div style="margin-top: 16px;">
+          <button id="submitBtn" type="submit">Create Post</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <section id="result" style="display:none;">
+      <h2>Result</h2>
+      <pre id="json"></pre>
+      <div id="previewWrap" style="display:none;">
+        <h3>Image Preview</h3>
+        <img id="preview" alt="Uploaded image preview" />
+      </div>
+    </section>
+
+    <script>
+      const form = document.getElementById('postForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const result = document.getElementById('result');
+      const jsonPre = document.getElementById('json');
+      const previewWrap = document.getElementById('previewWrap');
+      const preview = document.getElementById('preview');
+
+      // Prefill baseUrl: use saved value, or this page's origin if it's :3000, else localhost:3000
+      const baseUrlInput = document.getElementById('baseUrl');
+      const savedBase = localStorage.getItem('apiBaseUrl') || '';
+      const defaultBase = (window.location.port === '3000') ? window.location.origin : 'http://localhost:3000';
+      baseUrlInput.value = savedBase || defaultBase;
+
+      baseUrlInput.addEventListener('change', () => {
+        localStorage.setItem('apiBaseUrl', baseUrlInput.value.trim());
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        jsonPre.textContent = 'Submitting...';
+        result.style.display = 'block';
+        previewWrap.style.display = 'none';
+
+        try {
+          const fd = new FormData();
+          fd.set('title', document.getElementById('title').value);
+          fd.set('subTitle', document.getElementById('subTitle').value);
+          fd.set('description', document.getElementById('description').value);
+          const file = document.getElementById('image').files[0];
+          if (file) fd.set('image', file);
+
+          const adminKey = document.getElementById('adminKey').value;
+          const inputBase = baseUrlInput.value.trim();
+          const baseUrl = inputBase || window.location.origin;
+          const resp = await fetch(`${baseUrl.replace(/\/$/, '')}/api/create-post`, {
+            method: 'POST',
+            headers: { 'x-admin-key': adminKey },
+            body: fd,
+          });
+
+          const ct = resp.headers.get('content-type') || '';
+          const text = await resp.text();
+          let data = null;
+          if (ct.includes('application/json')) {
+            try { data = JSON.parse(text); } catch (e) { /* ignore */ }
+          }
+          jsonPre.textContent = data ? JSON.stringify(data, null, 2) : `HTTP ${resp.status} ${resp.statusText}\n\n` + text;
+
+          if (resp.ok && data && data.post) {
+            const base = baseUrl || window.location.origin;
+            const imageUrl = data.post.imageUrl || (data.post.imagePath ? `${base.replace(/\/$/, '')}/uploads/${data.post.imagePath}` : null);
+            if (imageUrl) {
+              preview.src = imageUrl;
+              previewWrap.style.display = 'block';
+            }
+          }
+        } catch (err) {
+          jsonPre.textContent = 'Error: ' + (err?.message || String(err));
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+  </html>
