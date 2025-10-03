@@ -117,40 +117,33 @@
           "name": "Record Txn (public)",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"txnHash\": \"0xabc123\",\n  \"number\": 1,\n  \"meta\": { \"note\": \"donation\" }\n}"
+              "raw": "{\n  \"name\": \"Alice Donor\",\n  \"number\": \"01700000000\",\n  \"txnId\": \"BKASH123456\",\n  \"amount\": \"500\"\n}"
             },
-            "url": "{{baseUrl}}/api/record_txn_by_txn_hash_and_number"
+            "url": "{{baseUrl}}/api/rec_txn"
           }
         },
         {
-          "name": "Get Txn Details (admin)",
+          "name": "Get Txn Details (filter)",
           "request": {
             "method": "GET",
-            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
-            "url": "{{baseUrl}}/api/get_txn_details?txnHash=0xabc123"
+            "header": [],
+            "url": "{{baseUrl}}/api/get_txn_details?name=Alice%20Donor&number=01700000000&txnId=BKASH123456"
           }
         },
         {
-          "name": "Get Full Txn Record (admin)",
+          "name": "Get Full Txn Record (paginated)",
           "request": {
             "method": "GET",
-            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
-            "url": "{{baseUrl}}/api/get_full_txn_record?txnHash=0xabc123"
-          }
-        },
-        {
-          "name": "Get Txn Info by Number or Hash (admin)",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
-            "url": "{{baseUrl}}/api/get_txn_info_by_number_or_hash?number=1"
+            "header": [],
+            "url": "{{baseUrl}}/api/get_full_txn_record?page=1&pageSize=20"
           }
         }
       ]
     }
   ]
 }
-

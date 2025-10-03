@@ -1,0 +1,100 @@
+API Overview
+
+Base path: /api
+
+Posts API
+
+- POST /api/create-post (admin-only)
+  - Auth: Requires admin middleware.
+  - Content-Type: multipart/form-data or application/json.
+  - Inputs (form/body):
+    - title: string (required)
+    - subTitle: string (optional)
+    - description: string (required) — legacy alias: content
+    - imageUrl: string (optional)
+    - image: file (optional, image/*, < 5MB) — field name 'image'
+  - Rules: Must provide either an uploaded image file or imageUrl; otherwise 400.
+  - Responses:
+    - 201: { ok: true, post: PostRecord }
+    - 400: { error: string } — missing required fields or other validation error
+
+- PATCH /api/edit-post_by_id (admin-only)
+  - Auth: Requires admin middleware.
+  - Content-Type: multipart/form-data or application/json.
+  - Inputs (body/form):
+    - id: string (required)
+    - title: string (optional)
+    - subTitle: string (optional)
+    - description: string (optional) — legacy alias: content
+    - imageUrl: string (optional)
+    - image: file (optional, image/*) — field name 'image'
+  - Responses:
+    - 200: { ok: true, post: PostRecord }
+    - 400: { error: 'Missing id' }
+    - 404: { error: 'Post not found' }
+
+- DELETE /api/delete-post_by_id (admin-only)
+  - Auth: Requires admin middleware.
+  - Inputs:
+    - id: string (required) — accepted via query (?id=) or body
+  - Responses:
+    - 200: { ok: true, deleted: PostRecord }
+    - 400: { error: 'Missing id' }
+    - 404: { error: 'Post not found' }
+  - Side effects: If the post had an uploaded imagePath, attempts to delete the file from uploads.
+
+- GET /api/get_all_posts (public)
+  - Inputs: none
+  - Behavior: Returns LevelDB-backed summaries; normalizes relative image paths to absolute URLs using request host.
+  - Responses:
+    - 200: { ok: true, posts: Array<PostSummary> }
+
+- GET /api/get_post_full_by_id (public)
+  - Query params:
+    - id: string (required)
+  - Behavior: For legacy data, if description is missing, falls back to content field.
+  - Responses:
+    - 200: { ok: true, post: PostRecord }
+    - 400: { error: 'Missing id' }
+    - 404: { error: 'Post not found' }
+
+Txns API
+
+- POST /api/rec_txn (public)
+  - Content-Type: application/json
+  - Inputs (body):
+    - name: string (optional)
+    - number: string (required)
+    - txnId: string (required)
+    - amount: number|string (required; must parse to a finite number)
+  - Responses:
+    - 201: { ok: true, txn: TxnRecord }
+    - 400: { error: 'Missing required fields: number, txnId, amount' } or { error: 'Invalid amount' }
+    - 409: { error: 'Transaction already recorded' }
+    - 500: { error: 'Failed to record transaction' }
+
+- GET /api/get_txn_details (public)
+  - Query params (at least one required):
+    - name: string (optional)
+    - number: string (optional)
+    - txnId: string (optional)
+  - Behavior: Returns all records matching all provided filters (AND logic across provided keys).
+  - Responses:
+    - 200: { ok: true, count: number, txns: TxnRecord[] }
+    - 400: { error: 'Provide at least one of: name, number, txnId' }
+    - 500: { error: 'Failed to fetch transactions' }
+
+- GET /api/get_full_txn_record (public)
+  - Query params:
+    - page: number (optional; default 1; min 1)
+    - pageSize: number (optional; default 20; min 1; max 100)
+  - Behavior: Paginates over full list; also returns total contributed amount.
+  - Responses:
+    - 200: { ok: true, totalAmount: number, count: number, page: number, pageSize: number, txns: TxnRecord[] }
+    - 500: { error: 'Failed to fetch full transaction record' }
+
+Notes
+
+- File uploads store a relative imagePath under the server's uploads directory; response objects may include this path. When listing posts, relative image paths are normalized to absolute URLs.
+- Some older post records may use 'content' instead of 'description'; the APIs normalize this when reading and writing.
+- Admin-only routes use an adminOnly middleware; clients must satisfy whatever authentication/authorization that middleware enforces.

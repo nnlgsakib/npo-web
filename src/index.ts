@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import postsRouter from './routes/posts';
 import txnsRouter from './routes/txns';
 import path from 'path';
+import cors from 'cors';
 import { uploadDir } from './utils/upload';
 import requestLogger from './middleware/requestLogger';
 import logger, { setLogLevel } from './log';
@@ -27,16 +28,8 @@ async function main() {
   const app = express();
   app.use(express.json({ limit: '2mb' }));
   app.use(requestLogger);
+  app.use(cors());
   logger.info('middleware configured', { staticUploads: '/uploads' });
-
-  // Simple CORS for dev/testing (allows cross-origin form submits and auth header)
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, x-admin-key');
-    if (req.method === 'OPTIONS') return res.sendStatus(204);
-    next();
-  });
 
   // Serve uploaded files statically (for convenience in dev)
   app.use('/uploads', express.static(path.resolve(uploadDir)));
