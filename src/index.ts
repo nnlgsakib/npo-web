@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import postsRouter from './routes/posts';
 import txnsRouter from './routes/txns';
+import membersRouter from './routes/members';
 import path from 'path';
 import cors from 'cors';
 import { uploadDir } from './utils/upload';
@@ -44,6 +45,7 @@ async function main() {
   // Mount routers under /api
   app.use('/api', postsRouter);
   app.use('/api', txnsRouter);
+  app.use('/api', membersRouter);
   logger.info('routers mounted', { routes: ['/api/*'] });
 
   const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;

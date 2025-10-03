@@ -144,6 +144,121 @@
           }
         }
       ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Submit Member Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "John Doe", "type": "text" },
+                { "key": "fathersName", "value": "Richard Doe", "type": "text" },
+                { "key": "mothersName", "value": "Jane Doe", "type": "text" },
+                { "key": "region", "value": "Dhaka", "type": "text" },
+                { "key": "institution", "value": "Dhaka University", "type": "text" },
+                { "key": "address", "value": "123 Main St, Dhaka", "type": "text" },
+                { "key": "email", "value": "john.doe@example.com", "type": "text" },
+                { "key": "whyJoining", "value": "I want to contribute to the community.", "type": "text" },
+                { "key": "howDidYouFindUs", "value": "From a friend.", "type": "text" },
+                { "key": "hobbies", "value": "Reading, coding", "type": "text" },
+                { "key": "phoneNumber", "value": "01234567890", "type": "text" },
+                { "key": "photo", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/submit_member_req"
+          }
+        },
+        {
+          "name": "Get All Member Requests (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/get_all_member_reqs?status=pending&page=1&pageSize=10"
+          }
+        },
+        {
+          "name": "Manage Member Request (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"your_request_id\",\n  \"action\": \"approve\"\n}"
+            },
+            "url": "{{baseUrl}}/api/manage_member_req_by_id"
+          }
+        },
+        {
+          "name": "Get All Official Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/get_all_official_members?page=1&pageSize=10"
+          }
+        },
+        {
+          "name": "Pin Member as VIP (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"member_id_to_pin\"\n}"
+            },
+            "url": "{{baseUrl}}/api/pin_member_as_vip_by_id"
+          }
+        },
+        {
+          "name": "Get All Pinned Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/get_all_pinned_members?page=1&pageSize=10"
+          }
+        },
+        {
+          "name": "Get Member Info by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/get_member_info_by_id?id=member_id"
+          }
+        },
+        {
+          "name": "Get Pending Request Info by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-admin-key", "value": "{{adminKey}}" }],
+            "url": "{{baseUrl}}/api/get_pending_request_info_by_id?id=request_id"
+          }
+        },
+        {
+          "name": "Delete Member (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "x-admin-key", "value": "{{adminKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"member_id_to_delete\"\n}"
+            },
+            "url": "{{baseUrl}}/api/delete_member"
+          }
+        }
+      ]
     }
   ]
 }
