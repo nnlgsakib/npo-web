@@ -1,0 +1,201 @@
+# Member API Documentation
+
+This document provides details on the member-related API endpoints.
+
+---
+
+### 1. Submit Member Request
+
+- **Endpoint:** `POST /api/submit_member_req`
+- **Access:** Public
+- **Description:** Submits a new request to become a member.
+- **Request Type:** `multipart/form-data`
+- **Request Body:**
+  - `name` (string, required): Full name of the applicant.
+  - `fathersName` (string, required): Father's name.
+  - `mothersName` (string, required): Mother's name.
+  - `region` (string, required): The region or area the applicant belongs to.
+  - `institution` (string, required): Current educational institution or workplace.
+  - `address` (string, required): Full permanent address.
+  - `email` (string, required): Contact email address.
+  - `whyJoining` (string, required): Reason for wanting to join.
+  - `howDidYouFindUs` (string, required): How the applicant heard about the organization.
+  - `hobbies` (string, required): Applicant's hobbies.
+  - `phoneNumber` (string, required): Contact phone number.
+  - `photo` (file, optional): A profile photo of the applicant.
+  - `particularSkill` (string, optional): Any special skills the applicant has.
+  - `extraCurricularActivities` (string, optional): Involvement in other activities.
+- **Success Response (201 Created):**
+  ```json
+  {
+    "ok": true,
+    "request": { ...MemberRequestObject }
+  }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If any required fields are missing.
+  - `500 Internal Server Error`: If the request fails on the server.
+
+---
+
+### 2. Get All Member Requests
+
+- **Endpoint:** `GET /api/get_all_member_reqs`
+- **Access:** Admin Only
+- **Description:** Retrieves a paginated list of all member requests. Can be filtered by status.
+- **Query Parameters:**
+  - `status` (string, optional): Filter by status. Can be `pending`, `approved`, or `rejected`.
+  - `page` (number, optional, default: 1): The page number for pagination.
+  - `pageSize` (number, optional, default: 20): The number of items per page.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "total": 150,
+    "page": 1,
+    "pageSize": 20,
+    "requests": [ ...ArrayOfMemberRequestObjects ]
+  }
+  ```
+
+---
+
+### 3. Manage Member Request
+
+- **Endpoint:** `PATCH /api/manage_member_req_by_id`
+- **Access:** Admin Only
+- **Description:** Approves or rejects a pending member request.
+- **Request Body:** `application/json`
+  - `id` (string, required): The ID of the member request to manage.
+  - `action` (string, required): The action to perform. Must be `approve` or `reject`.
+  - `designation` (string, optional): A title to assign to the member upon approval (e.g., "Coordinator"). Defaults to "member" if not provided.
+- **Success Response (200 OK):**
+  ```json
+  { "ok": true }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If `id` or `action` is missing or invalid.
+  - `404 Not Found`: If no member request is found with the given `id`.
+
+---
+
+### 4. Get All Official Members
+
+- **Endpoint:** `GET /api/get_all_official_members`
+- **Access:** Public
+- **Description:** Retrieves a paginated list of all approved, official members.
+- **Query Parameters:**
+  - `page` (number, optional, default: 1): The page number for pagination.
+  - `pageSize` (number, optional, default: 20): The number of items per page.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "total": 85,
+    "page": 1,
+    "pageSize": 20,
+    "members": [ ...ArrayOfOfficialMemberObjects ]
+  }
+  ```
+
+---
+
+### 5. Pin Member as Lead Memeber
+
+- **Endpoint:** `PATCH /api/pin_member_as_vip_by_id`
+- **Access:** Admin Only
+- **Description:** Marks an official member as a "pinned" or Lead Memeber member.
+- **Request Body:** `application/json`
+  - `id` (string, required): The ID of the official member to pin.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "member": { ...OfficialMemberObject }
+  }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If `id` is missing.
+  - `404 Not Found`: If no official member is found with the given `id`.
+
+---
+
+### 6. Get All Pinned Members
+
+- **Endpoint:** `GET /api/get_all_pinned_members`
+- **Access:** Public
+- **Description:** Retrieves a paginated list of all members who have been pinned.
+- **Query Parameters:**
+  - `page` (number, optional, default: 1): The page number for pagination.
+  - `pageSize` (number, optional, default: 20): The number of items per page.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "total": 12,
+    "page": 1,
+    "pageSize": 20,
+    "members": [ ...ArrayOfOfficialMemberObjects ]
+  }
+  ```
+
+---
+
+### 7. Get Member Info by ID
+
+- **Endpoint:** `GET /api/get_member_info_by_id`
+- **Access:** Public
+- **Description:** Retrieves detailed information for a single official member.
+- **Query Parameters:**
+  - `id` (string, required): The ID of the member.
+  - `fields` (string, optional): A comma-separated list of specific fields to return (e.g., `name,email,photo`). If not provided, returns the full member object.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "member": { ...OfficialMemberObject }
+  }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If `id` is missing.
+  - `404 Not Found`: If no member is found with the given `id`.
+
+---
+
+### 8. Get Pending Request Info by ID
+
+- **Endpoint:** `GET /api/get_pending_request_info_by_id`
+- **Access:** Admin Only
+- **Description:** Retrieves details for a single *pending* member request.
+- **Query Parameters:**
+  - `id` (string, required): The ID of the pending member request.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "request": { ...MemberRequestObject }
+  }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If `id` is missing.
+  - `404 Not Found`: If no *pending* request is found with the given `id`.
+
+---
+
+### 9. Delete Member
+
+- **Endpoint:** `DELETE /api/delete_member`
+- **Access:** Admin Only
+- **Description:** Permanently deletes an official member.
+- **Request Body:** `application/json`
+  - `id` (string, required): The ID of the official member to delete.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true,
+    "deleted": { ...OfficialMemberObject }
+  }
+  ```
+- **Error Responses:**
+  - `400 Bad Request`: If `id` is missing.
+  - `404 Not Found`: If no official member is found with the given `id`.

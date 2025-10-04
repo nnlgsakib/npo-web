@@ -205,7 +205,7 @@
           }
         },
         {
-          "name": "Pin Member as VIP (Admin)",
+          "name": "Pin Member as Lead Memeber (Admin)",
           "request": {
             "method": "PATCH",
             "header": [

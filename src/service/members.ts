@@ -149,6 +149,17 @@ export async function getAllPinnedMembers(): Promise<OfficialMember[]> {
     return allMembers.filter(m => m.isPinned);
 }
 
+export async function unpinMember(id: string): Promise<OfficialMember | undefined> {
+    const member = await getOfficialMemberById(id);
+    if (!member) return undefined;
+
+    member.isPinned = false;
+    member.updatedAt = new Date().toISOString();
+    await db.put(officialMemberKey(id), member as any);
+    logger.info('Member unpinned', { id });
+    return member;
+}
+
 export async function deleteMember(id: string): Promise<OfficialMember | undefined> {
     const member = await getOfficialMemberById(id);
     if (!member) return undefined;

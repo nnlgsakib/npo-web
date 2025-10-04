@@ -27,9 +27,11 @@ async function main() {
   }
 
   const app = express();
-  app.use(express.json({ limit: '2mb' }));
   app.use(requestLogger);
-  app.use(cors());
+  app.use(cors({ origin: 'http://localhost:4000', allowedHeaders: ['Content-Type', 'x-admin-key'] }));
+  // Parse JSON and form bodies for PATCH/POST/DELETE handlers
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true }));
   logger.info('middleware configured', { staticUploads: '/uploads' });
 
   // Serve uploaded files statically (for convenience in dev)

@@ -124,6 +124,21 @@ router.patch('/pin_member_as_vip_by_id', adminOnly, async (req, res) => {
     res.json({ ok: true, member });
 });
 
+// PATCH /api/unpin_member_as_vip_by_id (admin)
+router.patch('/unpin_member_as_vip_by_id', adminOnly, async (req, res) => {
+    const { id } = req.body;
+    if (!id) {
+        return res.status(400).json({ error: 'Missing id' });
+    }
+
+    const member = await memberService.unpinMember(id);
+    if (!member) {
+        return res.status(404).json({ error: 'Official member not found' });
+    }
+
+    res.json({ ok: true, member });
+});
+
 // GET /api/get_all_pinned_members (public)
 router.get('/get_all_pinned_members', async (req, res) => {
     const page = parseInt(req.query.page as string || '1');
