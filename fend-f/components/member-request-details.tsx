@@ -30,7 +30,7 @@ export function MemberRequestDetailsDialog({
     if (url.startsWith('http')) return url
     const path = url.startsWith('/') ? url : `/${url}`
     // Always load uploads from backend on :3000
-    return `http://localhost:3000${path}`
+    return `https://ea1d406cdbc3.ngrok-free.app${path}`
   }
 
   const photoUrl = useMemo(() => {

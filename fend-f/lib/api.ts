@@ -1,9 +1,9 @@
 // API utility functions for FLABD
 import { getAdminKey } from "./admin-auth"
 
-const API_BASE_SERVER = "http://localhost:3000/api"
+const API_BASE_SERVER = "https://ea1d406cdbc3.ngrok-free.app/api"
 const API_BASE_CLIENT = "/api"
-const SERVER_BASE_URL = "http://localhost:3000"
+const SERVER_BASE_URL = "https://ea1d406cdbc3.ngrok-free.app"
 
 export const API_BASE =
   typeof window === "undefined" ? API_BASE_SERVER : API_BASE_CLIENT

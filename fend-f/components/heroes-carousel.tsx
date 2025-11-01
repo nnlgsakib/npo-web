@@ -9,7 +9,7 @@ function resolveUploadUrl(url?: string) {
   if (!url) return undefined
   if (url.startsWith("http")) return url
   const path = url.startsWith("/") ? url : `/${url}`
-  return `http://localhost:3000${path}`
+  return `https://ea1d406cdbc3.ngrok-free.app${path}`
 }
 
 export function HeroesCarousel({ heroes }: { heroes: OfficialMember[] }) {
