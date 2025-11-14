@@ -1,12 +1,12 @@
 // API utility functions for FLABD
 import { getAdminKey } from "./admin-auth"
 
-const API_BASE_SERVER = "https://gallery-tue-funky-adoption.trycloudflare.com/api"
+export const API_BASE = "https://gallery-tue-funky-adoption.trycloudflare.com/api"
 const API_BASE_CLIENT = "/api"
-const SERVER_BASE_URL = "https://gallery-tue-funky-adoption.trycloudflare.com"
+export const SERVER_BASE_URL = "https://gallery-tue-funky-adoption.trycloudflare.com/api"
 
-export const API_BASE =
-  typeof window === "undefined" ? API_BASE_SERVER : API_BASE_CLIENT
+// export const API_BASE =
+//   typeof window === "undefined" ? API_BASE_SERVER : API_BASE_CLIENT
 
 export interface Post {
   id: string
