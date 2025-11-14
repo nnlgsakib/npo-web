@@ -26,9 +26,14 @@ async function main() {
     process.exit(1);
   }
 
+
+  const allowedOrigins = [
+  "http://localhost:4000",
+  "https://www.futureleadersassembly.org"
+];
   const app = express();
   app.use(requestLogger);
-  app.use(cors({ origin: 'http://localhost:4000', allowedHeaders: ['Content-Type', 'x-admin-key'] }));
+  app.use(cors({ origin:allowedOrigins , allowedHeaders: ['Content-Type', 'x-admin-key'] }));
   // Parse JSON and form bodies for PATCH/POST/DELETE handlers
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true }));
